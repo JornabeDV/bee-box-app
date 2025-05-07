@@ -1,0 +1,22 @@
+import { writable } from 'svelte/store';
+
+export const isSaving = writable(false);
+export const selectedSkill = writable({});
+export const trainingRoom = writable();
+export const streamingRoom = writable({});
+export const analysisRoom = writable({});
+export const selectedAnalyst = writable({});
+export const selectedSecondaryAnalyst = writable({});
+export const showSecondaryAnalyst = writable(false);
+export const showAnalyst = writable(false);
+export const selectedSlot = writable({});
+export const selectedSlotPosition = writable(null);
+export const showSettings = writable(false);
+export const skillsData = writable({});
+export const playerStreamingSessionPlayer = writable({});
+export const switchFocus = writable(true);
+export const focusOptions = writable({});
+export const skillsMapping = writable({});
+export const focusSkills = writable({});
+export const isStreaming = writable(false);
+export const energyText = writable("");
