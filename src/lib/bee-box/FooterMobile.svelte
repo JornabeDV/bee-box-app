@@ -555,7 +555,7 @@
 			{#if team}
 				<a on:touchstart={toggleMenuClose} class=" w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out" href="/bee-box/profile/{1}">        
 					<div class="flex flex-col items-center justify-center">          
-						<Icon name="userTeam" class="h-4 w-4"/>
+						<Icon name="user-round" class="h-4 w-4"/>
 						<p class="text-light text-pMobile">Perfil</p>
 					</div>
 				</a>
@@ -565,25 +565,25 @@
 						<p class="text-light text-pMobile">Inicio</p>
 					</div>
 				</a>
-				<!-- <a on:touchstart={toggleMenuClose} href="/cpl/store/premium" class="w-1/5 flex text-gold border-[#313133] border-t-4 justify-center items-center text-pMobile" >
-					<div class="flex flex-col items-center">
-						<Icon class="w-4 h-4" name="crown" />
-						Get VIP
+				<a on:touchstart={toggleMenuClose} class=" w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out" href="/bee-box/shifts">        
+					<div class="flex flex-col items-center justify-center">          
+						<Icon name="calendar-days" class="h-4 w-4"/>
+						<p class="text-light text-pMobile">Turnos</p>
 					</div>
 				</a>
-				<a on:touchstart={toggleMenuClose} class="w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out" href="/cpl/tournaments">        
+				<a on:touchstart={toggleMenuClose} class=" w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out" href="/bee-box/timer">        
 					<div class="flex flex-col items-center justify-center">          
-						<Icon name="tournament" class="h-4 w-4"/>
-						<p class="text-light text-pMobile">Contests</p>
+						<Icon name="timer" class="h-4 w-4"/>
+						<p class="text-light text-pMobile">Timer</p>
 					</div>
-				</a> -->
+				</a>
+				<a on:touchstart={toggleMenuClose} class=" w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out" href="/bee-box/chat">        
+					<div class="flex flex-col items-center justify-center">          
+						<Icon name="message-square-text" class="h-4 w-4"/>
+						<p class="text-light text-pMobile">Chat</p>
+					</div>
+				</a>
 			{/if}
-      <!-- <button on:touchstart={toggleMenu} class=" w-1/5 flex text-base justify-center border-[#313133] items-center cursor-pointer hover:bg-[#F56E0E] border-solid hover:text-secondary hover:bg-opacity-[10%] hover:border-t-secondary border-t-4 hover:border-t-4 hover:border-solid hover:border-secondary transition duration-200 ease-in-out">        
-        <div class="flex flex-col items-center justify-center" >          
-          <Icon name="hamburger" class="h-4 w-4"/>
-          <p class="text-light text-pMobile">Menu</p>
-        </div>
-      </button> -->
     </div>
   </nav>
 </footer>
