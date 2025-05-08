@@ -1,55 +1,84 @@
 <script>
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
+  import Icon from '$lib/common/Icon.svelte';
+  import { onMount } from 'svelte';
 
-  const user = $page.data.user;
+  let user = $page.data.user;
+  let name = '';
+  let email = '';
+  let error = '';
+  let success = '';
+
+  onMount(() => {
+    name = user.name;
+    email = user.email;
+  });
+
+  async function updateProfile() {
+    try {
+      const res = await fetch(`/bee-box/api/users/${user.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      });
+
+      if (!res.ok) throw new Error('Error al actualizar');
+
+      success = 'Perfil actualizado con éxito';
+      error = '';
+    } catch (e) {
+      error = e.message || 'Ocurrió un error';
+      success = '';
+    }
+  }
 </script>
 
-<main class="bg-dark text-white min-h-screen pb-16">
-  <!-- Header -->
-  <header class="p-6 text-center">
-    <h1 class="text-3xl font-bold text-primary">Perfil de Usuario</h1>
-  </header>
+<!-- Volver -->
+<button 
+  class="font-sans p-3 button-base text-primary justify-start gap-1 hf:underline" 
+  type="button" 
+  on:click={() => goto('/bee-box')}
+>
+  <Icon name="arrow_short" class="w-6 h-6" />
+  Volver
+</button>
 
-  <!-- User Profile Section -->
-  <section class="max-w-7xl mx-auto p-6">
-    <div class="bg-dark rounded-lg shadow-xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Información del Usuario -->
-      <div class="col-span-2">
-        <h2 class="text-2xl font-semibold text-primary mb-2">{user.name}</h2>
-        <p class="text-sm text-gray-300">Correo: {user.email}</p>
-        <p class="text-sm text-gray-300">Fecha de registro: {user.createdAt}</p>
-        
-        <div class="mt-4">
-          <button 
-            class="bg-primary text-black py-2 px-4 rounded hover:bg-yellow-500 transition duration-200"
-            on:click="{() => editProfile()}"
-          >
-            Editar Perfil
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
+<!-- Título -->
+<h2 class="font-heading font-thin text-bee text-center mb-4">Perfil</h2>
 
-  <!-- Sección de Actividades Recientes -->
-  <section class="max-w-7xl mx-auto p-6 mt-8">
-    <div class="bg-secondary rounded-lg shadow-xl p-6">
-      <h3 class="text-xl font-semibold text-primary mb-4">Actividades Recientes</h3>
-      <ul class="space-y-3">
-        <!-- Lista de actividades, puede ser dinámico según las actividades del usuario -->
-        <li class="bg-black text-white p-4 rounded-md">
-          <p class="font-semibold">Actualización de perfil</p>
-          <span class="text-sm text-gray-300">Hace 2 horas</span>
-        </li>
-        <li class="bg-black text-white p-4 rounded-md">
-          <p class="font-semibold">Completó una tarea</p>
-          <span class="text-sm text-gray-300">Hace 1 día</span>
-        </li>
-        <li class="bg-black text-white p-4 rounded-md">
-          <p class="font-semibold">Recibió un mensaje</p>
-          <span class="text-sm text-gray-300">Hace 3 días</span>
-        </li>
-      </ul>
+<!-- Formulario de perfil -->
+<section class="max-w-2xl mx-auto p-6">
+  <div class="bg-dark rounded-lg shadow-xl p-6">
+    <div class="mb-4">
+      <label class="block text-primary mb-1" for="name">Nombre</label>
+      <input
+        id="name"
+        type="text"
+        class="w-full p-2 rounded bg-darkest text-white border border-gray-700"
+        bind:value={name}
+      />
     </div>
-  </section>
-</main>
+    <div class="mb-4">
+      <label class="block text-primary mb-1" for="email">Correo</label>
+      <input
+        id="email"
+        type="email"
+        class="w-full p-2 rounded bg-darkest text-white border border-gray-700"
+        bind:value={email}
+      />
+    </div>
+    {#if error}
+      <p class="text-red-500 text-sm">{error}</p>
+    {/if}
+    {#if success}
+      <p class="text-green-500 text-sm">{success}</p>
+    {/if}
+    <button
+      class="bg-primary text-darkest text-sm font-sourceSemiBold py-2 px-4 rounded-full mt-4"
+      on:click={updateProfile}
+    >
+      Guardar Cambios
+    </button>
+  </div>
+</section>
