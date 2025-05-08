@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "manifest_version": 3,
+  "name": "Bee Box DevTools",
+  "description": "Chrome DevTools configuration for Bee Box",
+  "permissions": [
+    "devtools"
+  ],
+  "devtools_page": "devtools.html"
+}
