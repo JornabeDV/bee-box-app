@@ -276,7 +276,7 @@
       {/if} -->
     {/if}
   </div>
-  <div class="lg:hidden flex justify-between top-0 px-4 md:p-4 w-full h-full z-10 bg-light text-dark items-center">
+  <div class="lg:hidden flex justify-between top-0 px-4 md:p-4 w-full h-full z-10 bg-dark text-dark items-center">
     <Logo />
   </div>
 </div>

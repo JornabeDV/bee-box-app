@@ -37,9 +37,7 @@
 />
 
 <div class="flex flex-col md:flex-row lg:overflow-hidden lg:h-screen h-screen lg:min-h-screen lg:max-h-screen relative {$page.url.pathname.includes('/live') || $page.url.pathname.includes('/simulation') || $page.route.id === "/cpl/team/tactics/[slug]" ? 'bg-[#222222]' : ''}">
-
-  <div class="flex flex-col flex-1 relative h-full min-w-0">
-    
+  <div class="flex flex-col flex-1 relative h-full min-w-0">    
     {#if !$page.url.pathname.includes('/live') && !$page.url.pathname.includes('/simulation') && $page.route.id !== "/cpl/team/tactics/[slug]"}
     <Header general={data.general} />
     {/if}
@@ -54,7 +52,7 @@
             />
           </div>
         {:else}
-          <div class="h-full" in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+          <div class="h-full container-page overflow-y-auto" in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
             <slot team={data.team} />
           </div>
         {/if}
