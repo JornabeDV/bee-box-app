@@ -24,7 +24,7 @@
 <div class="w-full aspect-[16/7]" id="news">
   <Splide options={{ type: 'loop', autoplay: true, perPage: 1, pagination: true, arrows: false, width: '100%' }}>
     <SplideSlide>
-      <div class="desktop-only" style="background-image: url({hero_bg_desktop}); background-size: cover;background-position: right;">
+      <div class="desktop-only" style="background-image: url({donate_bg}); background-size: cover;background-position: right;">
         <div class="container-large flex flex-col justify-center items-start top-0 left-0 right-0 bottom-0 h-[78vh]">
           <div class="pb-3 leading-tight">
             <h1 class="uppercase text-[53px] tracking-wide text-dark">

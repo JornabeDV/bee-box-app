@@ -8,10 +8,13 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  name        String?
-  createdAt   DateTime @default(now()) @map("created_at")
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  passwordHash  String?       @map("password_hash") @db.VarChar
+
+  sessions Session[]
 
   @@map("users")
 }
@@ -25,4 +28,33 @@ model MembershipPlan {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("membership_plans")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  userId       Int      @map("user_id")
+  lastActivity DateTime @default(now()) @map("last_activity") @db.Timestamptz(6)
+
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+model GameSetting {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  value String
+
+  @@map("game_settings")
+}
+
+model EmailVerificationCode {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  email     String
+  code      String   @unique
+  expiresAt DateTime @map("expires_at")
+
+  @@map("email_verification_codes")
 }
