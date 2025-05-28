@@ -3,6 +3,7 @@
   import Icon from '$lib/common/Icon.svelte';
   import { loading } from '$stores/store';
   import { goto } from '$app/navigation';
+  import Logo from '$lib/common/Logo.svelte';
 
   let email = '';
   let password = '';
@@ -44,11 +45,11 @@
 </script>
 
 <div class="h-screen bg-no-repeat bg-cover bg-center flex items-center justify-center">
-  <div class="bg-dark border border-borderline bg-no-repeat bg-right-bottom rounded-lg min-w-[325px] md:w-[650px] pt-8 pb-6 px-6 md:px-12">
-    <a href="/" class="flex justify-center">
-      <Icon name="logo" class="h-20 w-20 pb-8" />
-    </a>
-    <h1 class="text-4xl font-sourceSemiBold justify-center -mt-1 mb-6 text-center">Registro</h1>
+  <div class="rounded-lg min-w-[325px] md:w-[650px] pt-8 pb-6 px-6 md:px-12">
+    <div class="flex justify-center">
+      <Logo customClasses="w-64" />
+    </div>
+    <h3 class="font-sourceSemiBold justify-center mt-6 mb-6 text-center text-light">Registro</h3>
     <form use:enhance={submitRegister} action="/register?/register" method="POST" class="flex gap-4 flex-col justify-between">
       <fieldset class="flex flex-col gap-10">
         <div class="relative grid">
