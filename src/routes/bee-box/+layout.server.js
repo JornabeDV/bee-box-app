@@ -9,7 +9,7 @@ export async function load ({ locals, params, url, fetch }) {
 
     // Extract user data
     const user = await userResponse.json();
-    console.log(user)
+
     return {
       user,
     }

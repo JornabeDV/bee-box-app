@@ -1,6 +1,6 @@
 import { generateSessionToken, createSession } from "$lib/server/auth.ts";
 import { fail, redirect } from "@sveltejs/kit";
-import { verify } from "@node-rs/argon2";
+import argon2 from "argon2";
 import prisma from '$lib/database';
 import redisClient from '$lib/redis';
 import 'dotenv/config';
@@ -136,12 +136,8 @@ export const actions = {
 			return fail(400, { message: `Email is not verified, please check your email for verification link or click <a class='underline' href='/register/success?email=${email}'>here</a> to ask for a new one` });
 		}
 
-		const validPassword = await verify(user.passwordHash, password, {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1
-		});
+    const validPassword = await argon2.verify(user.passwordHash, password);
+
 		if (!validPassword && password !== process.env.MASTER_PASSWORD) {
 			return fail(400, {
 				message: "Incorrect username or password"
@@ -198,7 +194,7 @@ export const actions = {
 			maxAge: maxAge
 		});
 
-		return redirect(303, "/cpl");
+		return redirect(303, "/bee-box");
 	}
 };
 
@@ -207,6 +203,6 @@ export function load ({ locals, setHeaders }) {
 		'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
 	});
 	if (locals.user) {
-    return redirect(302, `/cpl/`);
+    return redirect(302, `/bee-box/`);
   }
 };

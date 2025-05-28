@@ -13,8 +13,10 @@ model User {
   name          String?
   createdAt     DateTime      @default(now()) @map("created_at")
   passwordHash  String?       @map("password_hash") @db.VarChar
-
+  emailVerified Boolean?      @map("email_verified")
+  
   sessions Session[]
+  loginHistory      LoginHistory[]
 
   @@map("users")
 }
@@ -57,4 +59,18 @@ model EmailVerificationCode {
   expiresAt DateTime @map("expires_at")
 
   @@map("email_verification_codes")
+}
+
+model LoginHistory {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  sessionId  String   @map("session_id")
+  loginAt    DateTime @default(now()) @map("login_at")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  clientId   String?  @map("client_id")
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("login_history")
 }
