@@ -44,11 +44,9 @@
   Volver
 </button>
 
-<!-- Título -->
 <h2 class="font-heading font-thin text-bee text-center mb-4">Perfil</h2>
 
-<!-- Formulario de perfil -->
-<section class="max-w-2xl mx-auto p-6">
+<section class="w-full">
   <div class="bg-dark rounded-lg shadow-xl p-6">
     <div class="mb-4">
       <label class="block text-primary mb-1" for="name">Nombre</label>

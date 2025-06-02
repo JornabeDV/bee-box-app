@@ -36,7 +36,7 @@
   pageURL={""}
 />
 
-<div class="flex flex-col md:flex-row lg:overflow-hidden lg:h-screen h-screen lg:min-h-screen lg:max-h-screen relative bg-darkest">
+<div class="flex flex-col md:flex-row lg:overflow-hidden lg:h-screen h-screen lg:min-h-screen lg:max-h-screen relative bg-darkest hex-bg">
   <div class="flex flex-col flex-1 relative h-full min-w-0">    
       <Header general={data.general} />
     <div class="relative w-full min-h-0 flex-1 lg:overflow-x-hidden md:overflow-y-auto" on:scroll={() => { closePopover(); closeTooltip(); }}>
