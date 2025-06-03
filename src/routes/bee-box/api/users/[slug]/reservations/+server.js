@@ -75,3 +75,41 @@ export async function POST({ request, params }) {
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE({ request, params }) {
+  try {
+    const { slug } = params;
+    const body = await request.json();
+
+    const user = await prisma.user.findUnique({
+      where: { id: +slug }
+    });
+    if (!user) {
+      return json({ error: 'User not found' }, { status: 404 });
+    }
+
+    const dateTimeStr = `${body.date}T${body.time}:00`;
+    const dateTime = new Date(dateTimeStr);
+
+    const clase = await prisma.class.findFirst({
+      where: { date: dateTime }
+    });
+    if (!clase) {
+      return json({ error: 'Class not found' }, { status: 404 });
+    }
+
+    await prisma.reservation.deleteMany({
+      where: {
+        userId: user.id,
+        classId: clase.id
+      }
+    });
+
+    await redisClient.del(`user:${slug}:reservations`);
+
+    return json({ message: 'Reservation cancelled' });
+  } catch (error) {
+    console.error('Error cancelling reservation:', error);
+    return json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

@@ -14,19 +14,16 @@
   export let data;
   
   let previousBasePath = '';
-  let currentBasePath = $page.url.pathname.split('/')[2]; // Initial base path
-  let isSameBasePath = true; // Track if it's the same base path
-
-  // Hook for before navigation to store the previous base path
+  let currentBasePath = $page.url.pathname.split('/')[2];
+  let isSameBasePath = true;
+  
   beforeNavigate(() => {
-    // Store current base path as previous before navigation starts
     previousBasePath = currentBasePath;
   });
 
-  // Hook for after navigation to check the current base path
   afterNavigate(() => {
-    currentBasePath = $page.url.pathname.split('/')[2]; // Update current base path
-    isSameBasePath = previousBasePath === currentBasePath; // Compare the base paths
+    currentBasePath = $page.url.pathname.split('/')[2];
+    isSameBasePath = previousBasePath === currentBasePath;
   });
 </script>
 
@@ -44,7 +41,7 @@
         {#if $navigating && !isSameBasePath}
           <div class="absolute left-1/2 -translate-x-1/2 top-1/4 z-10">
             <Icon
-              class="animate-spin w-16 h-16 text-secondary"
+              class="animate-spin w-16 h-16 text-bee"
               name="spinner-large"
             />
           </div>

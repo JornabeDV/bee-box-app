@@ -3,6 +3,7 @@
   import Icon from "$lib/common/Icon.svelte";
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(today);
