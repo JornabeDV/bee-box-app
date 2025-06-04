@@ -3,6 +3,7 @@
   import Icon from '$lib/common/Icon.svelte';
 
   const news = $page.data.news;
+  const user = $page.data.user;
 
   const userSubscription = {
     planName: 'Intermedio',
@@ -15,18 +16,18 @@
 </script>
 
 <div class="flex flex-col gap-6">
-  <section class="card">
+  <a href="/bee-box/plans/2" class="card">
     <h3 class="font-heading font-thin text-bee mb-2">Tu Plan Actual</h3>
     <p><span class="font-semibold text-primary">Plan:</span> {userSubscription.planName}</p>
     <p><span class="font-semibold text-primary">Clases restantes:</span> {userSubscription.remainingClasses}</p>
     <p><span class="font-semibold text-primary">Válido hasta:</span> {new Date(userSubscription.endDate).toLocaleDateString()}</p>
-  </section>
+  </a>
   <section>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {#each news as info}
           <div class="card">
-            <h4 class="font-heading font-thin text-bee mb-2">{info.title}</h4>
-            <p class="text-gray-300">{info.description}</p>
+            <h5 class="font-heading font-thin text-bee mb-2">{info.title}</h5>
+            <p class="text-gray-300">{info.content}</p>
           </div>
       {/each}
     </div>

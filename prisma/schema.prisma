@@ -18,19 +18,8 @@ model User {
   sessions           Session[]
   loginHistory       LoginHistory[]
   reservations       Reservation[]
-
+  purchases          Purchase[]
   @@map("users")
-}
-
-model MembershipPlan {
-  id          Int      @id @default(autoincrement())
-  name        String
-  price       Float
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@map("membership_plans")
 }
 
 model Session {
@@ -113,4 +102,34 @@ model Reservation {
   @@unique([userId, classId])
 
   @@map("reservations")
+}
+
+model Purchase {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  planId     Int      @map("plan_id")
+  amount     Int
+  paid       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt      @map("updated_at")
+  
+  plan       Plan     @relation(fields: [planId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+
+  @@map("purchases")
+}
+
+model Plan {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  description         String?
+  price               Int
+  classesPerMonth     Int      @map("classes_per_month")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  purchases           Purchase[]
+
+  @@map("plans")
 }

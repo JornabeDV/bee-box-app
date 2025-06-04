@@ -49,7 +49,7 @@
   Volver
 </button>  
 
-<h2 class="font-heading font-thin text-bee text-center mb-4">Agenda</h2>
+<h3 class="font-heading font-thin text-bee text-center mb-4">Agenda</h3>
 
 <div class="flex overflow-x-auto gap-4 px-2 pb-4 scroll-smooth">
   {#each Object.entries(groupedSchedule) as [day, classes]}

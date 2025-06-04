@@ -34,7 +34,6 @@
   }
 </script>
 
-<!-- Volver -->
 <button 
   class="font-sans p-3 button-base text-primary justify-start gap-1 hf:underline" 
   type="button" 
@@ -44,7 +43,7 @@
   Volver
 </button>
 
-<h2 class="font-heading font-thin text-bee text-center mb-4">Perfil</h2>
+<h3 class="font-heading font-thin text-bee text-center mb-4">Perfil</h3>
 
 <section class="w-full">
   <div class="bg-dark rounded-lg shadow-xl p-6">

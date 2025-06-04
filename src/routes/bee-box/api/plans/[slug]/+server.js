@@ -5,16 +5,16 @@ import redisClient from '$lib/redis';
 export async function GET({ params }) {
   try {
     const { slug } = params;
-    const cacheKey = `plans:${slug}`;
-    console.log(slug)
-    // Verificar si el usuario está en caché
-    const cachedData = await redisClient.get(cacheKey);
-    if (cachedData) {
-      return json(JSON.parse(cachedData));
-    }
+    // const cacheKey = `plans:${slug}`;
+
+    // // Verificar si el usuario está en caché
+    // const cachedData = await redisClient.get(cacheKey);
+    // if (cachedData) {
+    //   return json(JSON.parse(cachedData));
+    // }
 
     // Buscar usuario en la base de datos
-    const plan = await prisma.membershipPlan.findUnique({
+    const plan = await prisma.plan.findUnique({
       where: { id: +slug }
     });
 
@@ -23,7 +23,7 @@ export async function GET({ params }) {
     }
 
     // Guardar en caché por 1 día
-    await redisClient.set(cacheKey, JSON.stringify(plan), 'EX', 86400);
+    // await redisClient.set(cacheKey, JSON.stringify(plan), 'EX', 86400);
 
     return json(plan);
 
