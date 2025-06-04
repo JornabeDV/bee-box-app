@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "prisma generate && vite build",
     "preview": "vite preview",
     "dev:tailwindcss": "npx tailwindcss -i ./src/app.css -o ./src/lib/assets/tailwind.css --watch",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
