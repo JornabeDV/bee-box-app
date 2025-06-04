@@ -1,29 +1,65 @@
 <script>
-  import HomeBanner from '$lib/bee-box/home/HomeBanner.svelte';
-  import { goto } from "$app/navigation";
   import { page } from '$app/stores';
+  import Icon from '$lib/common/Icon.svelte';
 
-  const plans = $page.data.plans;
+  const news = $page.data.news;
+  const user = $page.data.user;
+
+  const userSubscription = {
+    planName: 'Intermedio',
+    remainingClasses: 8,
+    endDate: '2025-07-15'
+  };
+
+  const whatsappNumber = '2995249409';
+  const whatsappMessage = 'Hola! Me gustaría obtener más información.';
 </script>
 
-<main>
-  <section class="max-w-7xl mx-auto p-6 mt-8">
-    <div class="bg-bee rounded-lg shadow-xl p-6">
-      <h3 class="text-2xl font-semibold text-dark text-center mb-4">Planes de Membresía</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {#each plans as plan}
-          <div class="bg-black text-white rounded-lg p-6 text-center shadow-md">
-            <h6 class="text-xl font-semibold text-primary mb-2">{plan.name}</h6>
-            <p class="font-bold text-yellow-500 mb-4">${plan.price}/mes</p>
-            <button
-              class="bg-primary text-black py-2 px-4 rounded mt-4 hover:bg-yellow-500 transition duration-200"
-              on:click={() => goto(`bee-box/plans/${plan.id}`)}
-            >
-              Más Información
-            </button>
+<div class="flex flex-col gap-6">
+  <a href="/bee-box/plans/2" class="card">
+    <h3 class="font-heading font-thin text-bee mb-2">Tu Plan Actual</h3>
+    <p><span class="font-semibold text-primary">Plan:</span> {userSubscription.planName}</p>
+    <p><span class="font-semibold text-primary">Clases restantes:</span> {userSubscription.remainingClasses}</p>
+    <p><span class="font-semibold text-primary">Válido hasta:</span> {new Date(userSubscription.endDate).toLocaleDateString()}</p>
+  </a>
+  <section>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {#each news as info}
+          <div class="card">
+            <h5 class="font-heading font-thin text-bee mb-2">{info.title}</h5>
+            <p class="text-gray-300">{info.content}</p>
           </div>
-        {/each}
-      </div>
+      {/each}
     </div>
   </section>
-</main>
+</div>
+
+<!-- Floating WhatsApp Button -->
+<a
+  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="fixed bottom-[500px] right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 z-50"
+  aria-label="Contactar por WhatsApp"
+>
+  <Icon class="w-8 h-8" name="whatsapp" />
+</a>
+
+<style>
+  /* Add smooth animation for the WhatsApp button */
+  a[aria-label="Contactar por WhatsApp"] {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+</style>

@@ -25,7 +25,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-missing-attribute -->
 <!-- svelte-ignore missing-declaration -->
-<nav class="block absolute top-[100%] w-full left-0 bg-light z-40 bg-contain bg-bottom bg-no-repeat" class:max-md:hidden={!isMenuOpen}>
+<nav class="block absolute top-[100%] w-full left-0 bg-dark z-40 bg-contain bg-bottom bg-no-repeat" class:max-md:hidden={!isMenuOpen}>
   <ul class="flex flex-col z-20 justify-between items-left gap-9 my-16 md:items-center container-large">
     <li>
       <button class="hover:text-primary hover:font-semibold cursor-pointer rounded-none p-0 h-[30px] text-light bg-transparent font-normal text-lg hover:border-b hover:border-secondary uppercase" on:click={() => {toggleMenu(); smoothScroll('home_mobile');}}>Home</button>
@@ -38,7 +38,7 @@
     </li> 
   </ul>
 </nav>
-<button class="mt-2 flex bg-light p-0 text-dark" aria-label="Menu" on:click={toggleMenu}>
+<button class="mt-2 flex bg-dark p-0 text-light" aria-label="Menu" on:click={toggleMenu}>
   {#if isCrossIcon}
   <Icon name="cross" class="h-6 w-6"/>
   {:else}

@@ -1,5 +1,14 @@
 <script>
   import "../app.css";
+  import Popup from '$lib/common/Popup.svelte';
+
 </script>
 
-<slot />
+
+<div class="h-screen bg-dark hex-bg">
+
+  <slot />
+
+  <Popup /> 
+
+</div>

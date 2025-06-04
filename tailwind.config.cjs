@@ -20,9 +20,11 @@ module.exports = {
         robotoBlack: 'Roboto-Black',
         sourceBold: 'Source-Sans-Bold',
         sourceSerif: 'Source-Serif',
+        heading: ['Bebas Neue', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       colors: {
-        bee: '#F7CB00',
+        bee: '#FEEA3B',
         primary: '#EDEEC0',
         secondary: '#F56E0E',
         dark: 'var(--color-secondary)',

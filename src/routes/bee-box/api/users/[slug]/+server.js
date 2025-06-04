@@ -6,29 +6,48 @@ export async function GET({ params }) {
   try {
     const { slug } = params;
     const cacheKey = `user:${slug}`;
-    console.log(slug)
-    // Verificar si el usuario está en caché
+
     const cachedData = await redisClient.get(cacheKey);
     if (cachedData) {
       return json(JSON.parse(cachedData));
     }
 
-    // Buscar usuario en la base de datos
     const user = await prisma.user.findUnique({
       where: { id: +slug }
     });
 
     if (!user) {
-      return json({ error: 'Usuario no encontrado' }, { status: 404 });
+      return json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Guardar en caché por 1 día
     await redisClient.set(cacheKey, JSON.stringify(user), 'EX', 86400);
 
     return json(user);
 
   } catch (error) {
-    console.error('Error al obtener el usuario:', error);
-    return json({ error: 'Error interno del servidor' }, { status: 500 });
+    console.error('Error fetching user:', error);
+    return json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PUT({ request, params }) {
+  const { slug } = params;
+  const body = await request.json();
+
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: +slug },
+      data: {
+        name: body.name,
+        email: body.email
+      }
+    });
+
+    await redisClient.del(`user:${slug}`);
+    
+    return json(updatedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return json({ error: 'Internal server error' }, { status: 500 });
   }
 }

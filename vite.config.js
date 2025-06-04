@@ -18,3 +18,11 @@ export default defineConfig({
     external: ['@prisma/client'],
   }
 });
+
+export default {
+  build: {
+    rollupOptions: {
+      external: ['@node-rs/argon2'],
+    },
+  },
+};

@@ -8,21 +8,128 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  name        String?
-  createdAt   DateTime @default(now()) @map("created_at")
-
+  id            Int           @id @default(autoincrement())
+  email         String        @unique
+  name          String?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  passwordHash  String?       @map("password_hash") @db.VarChar
+  emailVerified Boolean?      @map("email_verified")
+  
+  sessions           Session[]
+  loginHistory       LoginHistory[]
+  reservations       Reservation[]
+  purchases          Purchase[]
   @@map("users")
 }
 
-model MembershipPlan {
-  id          Int      @id @default(autoincrement())
-  name        String
-  price       Float
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+model Session {
+  id           String   @id @default(cuid())
+  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
+  userId       Int      @map("user_id")
+  lastActivity DateTime @default(now()) @map("last_activity") @db.Timestamptz(6)
 
-  @@map("membership_plans")
+  user         User     @relation(fields: [userId], references: [id])
+
+  @@map("sessions")
+}
+
+model GameSetting {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  value String
+
+  @@map("game_settings")
+}
+
+model EmailVerificationCode {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  email     String
+  code      String   @unique
+  expiresAt DateTime @map("expires_at")
+
+  @@map("email_verification_codes")
+}
+
+model LoginHistory {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  sessionId  String   @map("session_id")
+  loginAt    DateTime @default(now()) @map("login_at")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  clientId   String?  @map("client_id")
+
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("login_history")
+}
+
+model News {
+  id            Int       @id @default(autoincrement())
+  title         String
+  content       String
+  imageUrl      String?   @map("image_url")
+  publishedAt   DateTime  @default(now()) @map("published_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("news")
+}
+
+model Class {
+  id        Int           @id @default(autoincrement())
+  date      DateTime
+  time      String
+  type      String
+  coach     String
+  location  String
+  capacity  Int
+
+  reservations Reservation[]
+
+  @@map("classes")
+}
+
+model Reservation {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int       @map("user_id")
+  class    Class     @relation(fields: [classId], references: [id])
+  classId  Int       @map("class_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, classId])
+
+  @@map("reservations")
+}
+
+model Purchase {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  planId     Int      @map("plan_id")
+  amount     Int
+  paid       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt      @map("updated_at")
+  
+  plan       Plan     @relation(fields: [planId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+
+  @@map("purchases")
+}
+
+model Plan {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  description         String?
+  price               Int
+  classesPerMonth     Int      @map("classes_per_month")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  purchases           Purchase[]
+
+  @@map("plans")
 }

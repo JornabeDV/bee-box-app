@@ -5,7 +5,7 @@
   import DesktopMenu from './DesktopMenu.svelte';  
 </script>
 
-<div class="max-md:hidden bg-light sticky top-0 z-50">
+<div class="max-md:hidden bg-dark sticky top-0 z-50">
 
   <div class="flex justify-between items-center text-dark container-large h-[90px]">
     <Logo />
@@ -18,7 +18,7 @@
 
   </div>
 </div>
-<div class="md:hidden flex justify-between sticky top-0 w-full z-50 bg-light text-dark items-center h-[80px] container-large">
+<div class="md:hidden flex justify-between sticky top-0 w-full z-50 bg-dark text-dark items-center h-[80px] container-large">
   <Logo />
   <MobileMenu/>
 </div>

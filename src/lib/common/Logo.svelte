@@ -1,5 +1,5 @@
 <script>
-  import logoSrc from '../assets/logo-header.png'
+  import logoSrc from '../assets/white-logo.png'
 
   export let customClasses = '';
 
