@@ -13,16 +13,13 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     host: true
-  },  
+  },
   ssr: {
-    external: ['@prisma/client'],
-  }
-});
-
-export default {
+    external: ['@prisma/client']
+  },
   build: {
     rollupOptions: {
-      external: ['@node-rs/argon2'],
-    },
-  },
-};
+      external: ['@node-rs/argon2']
+    }
+  }
+});
