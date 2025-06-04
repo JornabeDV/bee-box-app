@@ -1,6 +1,6 @@
 import mercadopago from 'mercadopago';
 import { json } from '@sveltejs/kit';
-import db from '$lib/server/db'; // adapta esto a tu cliente DB
+import prisma from '$lib/database';
 
 mercadopago.configure({
   access_token: process.env.MERCADOPAGO_ACCESS_TOKEN

@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import db from '$lib/server/db';
+import prisma from '$lib/database';
 import mercadopago from 'mercadopago';
 
 mercadopago.configure({
