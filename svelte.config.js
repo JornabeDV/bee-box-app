@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-node';
+import adapter from '@sveltejs/adapter-netlify';
 import preprocess from "svelte-preprocess";
 
 // Custom plugin to filter out lengthy source in CssSyntaxError
@@ -18,24 +18,24 @@ filterCssSyntaxError.postcss = true;
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	kit: {
-		adapter: adapter(),
+  kit: {
+    adapter: adapter(),
     alias: {
       $stores: "src/stores",
       $shared: "shared",
       $services: "shared/services",
     },
-	},
-	preprocess: [
-		preprocess({
-		  postcss: {
+  },
+  preprocess: [
+    preprocess({
+      postcss: {
         plugins: [
           filterCssSyntaxError
         ]
       },
-			preserve: ['ld+json']
-		}),
-	],
+      preserve: ['ld+json']
+    }),
+  ],
 };
 
 export default config;
