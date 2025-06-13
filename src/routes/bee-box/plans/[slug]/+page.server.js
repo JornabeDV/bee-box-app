@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 
 export async function load({ params, fetch }) {
   const planId = params.slug;
+
   try {
     const response = await fetch(`/bee-box/api/plans/${planId}`);
     const plan = await response.json();

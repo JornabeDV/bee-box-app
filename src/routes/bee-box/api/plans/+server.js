@@ -11,7 +11,7 @@ export async function GET() {
       return json(JSON.parse(cachedData));
     }
 
-    const plans = await prisma.membershipPlan.findMany();
+    const plans = await prisma.plan.findMany();
 
     if (!plans) {
       return json({ error: 'Usuario no encontrado' }, { status: 404 });
