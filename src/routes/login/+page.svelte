@@ -58,9 +58,9 @@
 
   <div class="bg-no-repeat bg-right-bottom rounded-lg min-w-[325px] md:w-[500px] pt-8 pb-6 px-6 md:px-12">
     <div class="flex justify-center">
-      <Logo customClasses="w-64" />
+      <Logo customClasses="w-40" />
     </div>
-    <h3 class="font-sourceSemiBold justify-center mt-6 mb-6 text-center text-light">Iniciar Sesión</h3>
+    <h3 class="font-sourceSemiBold justify-center mb-6 text-center text-light">Iniciar Sesión</h3>
     <form use:enhance={submitLogin} action="/login?/login" method="POST" class="flex bg-no-repeat gap-4 flex-col justify-between">
       <fieldset class="flex flex-col gap-6">
         <div class="relative grid">

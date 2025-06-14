@@ -2,25 +2,23 @@ import { json } from '@sveltejs/kit';
 import prisma from '$lib/database';
 import redisClient from '$lib/redis';
 
-export async function GET({ params }) {
+export async function GET({ params, locals }) {
   try {
-    const { slug } = params;
-    const cacheKey = `user:${slug}:reservations`;
+    if (!locals.user) {
+      return json({ error: "Unauthorized access" }, { status: 403 });
+    }
+    const userId = locals.user.userId;
+
+    const cacheKey = `user:${userId}:reservations`;
 
     const cachedData = await redisClient.get(cacheKey);
+
     if (cachedData) {
       return json(JSON.parse(cachedData));
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: +slug }
-    });
-    if (!user) {
-      return json({ error: 'User not found' }, { status: 404 });
-    }
-
     const reservations = await prisma.reservation.findMany({
-      where: { user_id: +slug },
+      where: { userId: +slug },
       include: {
         class: true
       }
@@ -35,81 +33,107 @@ export async function GET({ params }) {
   }
 }
 
-export async function POST({ request, params }) {
+export async function POST({ params, request, locals }) {
+
+  const userId = locals.user.id;
+
+  const { scheduleId } = await request.json();
+
+  if (!scheduleId) {
+    return json({ error: 'Faltan parámetros' }, { status: 400 });
+  }
+
   try {
-    const { slug } = params;
-    const body = await request.json();
-
-    const user = await prisma.user.findUnique({
-      where: { id: +slug }
-    });
-    if (!user) {
-      return json({ error: 'User not found' }, { status: 404 });
-    }
-
-    const dateTimeStr = `${body.date}T${body.time}:00`;
-    const dateTime = new Date(dateTimeStr);
-
-    const clase = await prisma.class.findFirst({
+    const userPlan = await prisma.userPlan.findFirst({
       where: {
-        date: dateTime
+        userId,
+        expiresDate: { gte: new Date() },
+        remainingClasses: { gt: 0 },
       }
     });
 
-    if (!clase) {
-      return json({ error: 'Class not found' }, { status: 404 });
+    if (!userPlan) {
+      return json({
+        success: false,
+        error: 'No tenés un plan activo o clases disponibles. <a href="/bee-box/plans" class="underline text-blue-500">Ver planes</a>'
+      });
+    }
+
+    const schedule = await prisma.schedule.findUnique({
+      where: { id: scheduleId },
+      include: {
+        reservations: {
+          where: { scheduleId }
+        }
+      }
+    });
+
+    if (!schedule) {
+      return json({ success: false, error: 'Turno no encontrado' });
+    }
+
+    const alreadyReserved = schedule.reservations.some(
+      (r) => r.userId === userId
+    );
+
+    if (alreadyReserved) {
+      return json({ success: false, error: 'Ya estás registrado en esta clase' });
+    }
+
+    if (schedule.reservations.length >= schedule.maxCapacity) {
+      return json({ success: false,  error: 'Clase completa' });
     }
 
     const reservation = await prisma.reservation.create({
       data: {
-        userId: user.id,
-        classId: clase.id
+        userId,
+        scheduleId: schedule.id
       }
     });
 
-    await redisClient.del(`user:${slug}:reservations`);
+    await redisClient.del(`schedule:${schedule.id}`);
 
-    return json({ message: 'Reservation confirmed', reservation });
-  } catch (error) {
-    console.error('Error creating reservation:', error);
-    return json({ error: 'Internal server error' }, { status: 500 });
+    return json({ success: true, reservation });
+  } catch (err) {
+    console.error('Error al crear reserva:', err);
+    return json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
 
-export async function DELETE({ request, params }) {
+export async function DELETE({ request, params, locals }) {
   try {
-    const { slug } = params;
-    const body = await request.json();
+    const userId = locals.user.id;
+    const { scheduleId } = await request.json();
 
-    const user = await prisma.user.findUnique({
-      where: { id: +slug }
-    });
-    if (!user) {
-      return json({ error: 'User not found' }, { status: 404 });
+    if (!scheduleId) {
+      return json({ error: 'Faltan parámetros' }, { status: 400 });
     }
 
-    const dateTimeStr = `${body.date}T${body.time}:00`;
-    const dateTime = new Date(dateTimeStr);
-
-    const clase = await prisma.class.findFirst({
-      where: { date: dateTime }
+    const schedule = await prisma.schedule.findUnique({
+      where: { id: scheduleId }
     });
-    if (!clase) {
-      return json({ error: 'Class not found' }, { status: 404 });
+
+    if (!schedule) {
+      return json({ error: 'Clase no encontrada' }, { status: 404 });
     }
 
-    await prisma.reservation.deleteMany({
+    const deleted = await prisma.reservation.deleteMany({
       where: {
-        userId: user.id,
-        classId: clase.id
+        userId,
+        scheduleId: schedule.id,
       }
     });
 
-    await redisClient.del(`user:${slug}:reservations`);
+    if (deleted.count === 0) {
+      return json({ error: 'Reserva no encontrada' }, { status: 404 });
+    }
 
-    return json({ message: 'Reservation cancelled' });
-  } catch (error) {
-    console.error('Error cancelling reservation:', error);
-    return json({ error: 'Internal server error' }, { status: 500 });
+    await redisClient.del(`user:${userId}:reservations`);
+    await redisClient.del(`schedule:${scheduleId}`);
+
+    return json({ success:true, message: 'Reserva cancelada con éxito' });
+  } catch (err) {
+    console.error('Error al cancelar reserva:', err);
+    return json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }

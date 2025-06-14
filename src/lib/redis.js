@@ -1,7 +1,7 @@
 import { createClient } from 'redis';
 import { env } from '$env/dynamic/private';
 
-const skipRedis = env.SKIP_REDIS_CONNECTION === 'true';
+const skipRedis = env.SKIP_REDIS_CONNECTION === 'false';
 let client = null;
 
 if (!skipRedis) {

@@ -31,6 +31,7 @@ export async function POST({ request, locals }) {
       await prisma.user.update({
         where: { id: userId },
         data: {
+          planId,
           planStart: new Date(),
           planExpires: new Date(new Date().setMonth(new Date().getMonth() + 1))
         }

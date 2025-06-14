@@ -30,9 +30,9 @@ export async function POST({ request }) {
         unit_price: Number(plan.price)
       }],
       back_urls: {
-        success: 'https://bee-box-crossfit.netlify.app/success',
-        failure: 'https://bee-box-crossfit.netlify.app/success',
-        pending: 'https://bee-box-crossfit.netlify.app/success'
+        success: 'https://bee-box-crossfit.netlify.app/bee-box/success',
+        failure: 'https://bee-box-crossfit.netlify.app/bee-box/success',
+        pending: 'https://bee-box-crossfit.netlify.app/bee-box/success'
       },
       auto_return: 'approved',
       binary_mode: true,

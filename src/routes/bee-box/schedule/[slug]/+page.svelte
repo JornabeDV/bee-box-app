@@ -3,20 +3,20 @@
   import { onMount } from 'svelte';
   import { openPopup, loading } from '$stores/store';
   import AlertPopup from '$lib/bee-box/common/AlertPopup.svelte';
+  import AlertPopupUsername from '$lib/bee-box/common/AlertPopupUsername.svelte';
+  import { formatDayAndTime } from '$lib/utils.js';
 
   let user = $page.data.user;
   const classInfo = $page.data.classInfo;
-  $: date = $page.url.searchParams.get('date');
-  $: time = $page.url.searchParams.get('time');
 
   let alreadyRegistered = false;
   let error = null;  
 
-onMount(() => {
-  if (classInfo?.reservations?.some(r => r.user_id === user.id)) {
-    alreadyRegistered = true;
-  }
-});
+  onMount(() => {
+    if (classInfo?.reservations?.some(r => r.userId === user.id)) {
+      alreadyRegistered = true;
+    }
+  });
 
   async function reserveClass() {
     if (alreadyRegistered) return;
@@ -25,30 +25,32 @@ onMount(() => {
     try {
       const response = await fetch(`/bee-box/api/users/${user.id}/reservations`, {
         method: "POST",
-        body: JSON.stringify({ date, time }),
+        body: JSON.stringify({ scheduleId: classInfo.id }),
         headers: { 'Content-Type': 'application/json' }
       });
 
-      if (response.ok) {
-        openPopup(AlertPopup, {
-          content: 'Reserva confirmada',
+      const data = await response.json();
+      console.log(data)
+      if (!data.success) {
+        openPopup(AlertPopupUsername, {
+          content: data.error,
+          icon: 'cross_tactics',
           nofixed: true
-        }, false);
+        }, false); 
 
-        classInfo.reservations.push({ user });
-        alreadyRegistered = true;
-      } else {
-        const errData = await response.json();
-        openPopup(AlertPopup, {
-          content: `Error al reservar: ${errData.error || response.statusText}`,
-          nofixed: true
-        }, false);
+        return;
       }
-    } catch (err) {
-      openPopup(AlertPopup, {
-        content: 'Error al reservar la clase',
+
+      openPopup(AlertPopupUsername, {
+        content: 'Reserva confirmada',
+        icon: 'check_icon',
         nofixed: true
       }, false);
+
+      alreadyRegistered = true;
+      classInfo.reservations = [...classInfo.reservations,{ user: { id: user.id, name: user.name } }];
+    } catch (error) {
+      console.error("Error reservation", error);
     } finally {
       loading.set(false);
     }
@@ -59,31 +61,32 @@ onMount(() => {
     try {
       const response = await fetch(`/bee-box/api/users/${user.id}/reservations`, {
         method: "DELETE",
-        body: JSON.stringify({ date, time }),
+        body: JSON.stringify({ scheduleId: classInfo.id }),
         headers: { 'Content-Type': 'application/json' }
       });
 
-      if (response.ok) {
-        openPopup(AlertPopup, {
-          content: 'Te diste de baja correctamente',
-          nofixed: true
-        }, false);
+      const data = await response.json();
 
-        // Eliminar al usuario de la lista de reservas
-        classInfo.reservations = classInfo.reservations.filter(r => r.user?.id !== user.id);
-        alreadyRegistered = false;
-      } else {
-        const errData = await response.json();
-        openPopup(AlertPopup, {
-          content: `Error al cancelar: ${errData.error || response.statusText}`,
+      if (!data.success) {
+        openPopup(AlertPopupUsername, {
+          content: data.error,
+          icon: 'cross_tactics',
           nofixed: true
         }, false);
+        return;
       }
-    } catch (err) {
-      openPopup(AlertPopup, {
-        content: 'Error al cancelar la reserva',
+
+      openPopup(AlertPopupUsername, {
+        content: 'Te diste de baja correctamente',
+        icon: 'check_icon',
         nofixed: true
       }, false);
+
+      alreadyRegistered = false;
+      classInfo.reservations = classInfo.reservations.filter(r => r.user?.id !== user.id);
+
+    } catch (error) {
+      console.error("Error reservation", error);
     } finally {
       loading.set(false);
     }
@@ -92,16 +95,15 @@ onMount(() => {
 
   $: alreadyRegistered = classInfo?.reservations?.some(r => r.user?.id === user.id);
 </script>
-
 {#if classInfo}
   <section class="w-full">
     <div>
       <h5 class="font-heading font-thin text-bee mb-4">Clase: {classInfo.type}</h5>
 
       <div class="text-light mb-3 space-y-1">
-        <p>🗓️ {new Date(date).toLocaleDateString()} a las 🕒 {time}</p>
-        <p>👩‍🏫 Coach: {classInfo.coach}</p>
-        <p>📍 Ubicación: {classInfo.location}</p>
+        <p>🗓️ {formatDayAndTime(classInfo.dayOfWeek, classInfo.time)}</p>
+        <p>👩‍🏫 Coach: {classInfo.coach.name}</p>
+        <p>📍 Ubicación: {classInfo.location.name}</p>
       </div>
 
       <div class="mb-6">
@@ -145,4 +147,3 @@ onMount(() => {
 {:else}
   <p class="text-light italic">Cargando información de la clase...</p>
 {/if}
-

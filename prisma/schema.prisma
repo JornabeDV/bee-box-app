@@ -14,32 +14,27 @@ model User {
   createdAt     DateTime      @default(now()) @map("created_at")
   passwordHash  String?       @map("password_hash") @db.VarChar
   emailVerified Boolean?      @map("email_verified")
-  
-  sessions           Session[]
-  loginHistory       LoginHistory[]
-  reservations       Reservation[]
-  purchases          Purchase[]
+
+  userPlans                   UserPlan[]  
+  sessions                    Session[]
+  loginHistory                LoginHistory[]
+  reservations                Reservation[]
+  purchases                   Purchase[]
+
   @@map("users")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  expiresAt    DateTime @map("expires_at") @db.Timestamptz(6)
-  userId       Int      @map("user_id")
-  lastActivity DateTime @default(now()) @map("last_activity") @db.Timestamptz(6)
+  id               String       @id @default(cuid())
+  expiresAt        DateTime     @map("expires_at") @db.Timestamptz(6)
+  userId           Int          @map("user_id")
+  lastActivity     DateTime     @default(now()) @map("last_activity") @db.Timestamptz(6)
 
-  user         User     @relation(fields: [userId], references: [id])
+  user             User         @relation(fields: [userId], references: [id])
 
   @@map("sessions")
 }
 
-model GameSetting {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  value String
-
-  @@map("game_settings")
-}
 
 model EmailVerificationCode {
   id        Int      @id @default(autoincrement())
@@ -77,45 +72,59 @@ model News {
   @@map("news")
 }
 
-model Class {
-  id        Int           @id @default(autoincrement())
-  date      DateTime
-  time      String
-  type      String
-  coach     String
-  location  String
-  capacity  Int
+model Activity {
+  id          Int       @id @default(autoincrement())
+  name        String   
+  description String?
+
+  schedules   Schedule[]
+
+  @@map("activities")
+}
+
+model Schedule {
+  id          Int       @id @default(autoincrement())
+  activityId  Int       @map("activity_id")
+  dayOfWeek   Int       @map("day_of_week")    // 0 (sunday) a 6 (saturday)
+  time        String                          // "08:00", "18:30", etc.
+  coachId     Int?      @map("coach_id")
+  maxCapacity Int       @map("max_capacity")
+  locationId  Int       @map("location_id")
 
   reservations Reservation[]
+  
+  activity    Activity  @relation(fields: [activityId], references: [id])
+  coach       Coach?     @relation(fields: [coachId], references: [id])
+  location    Location  @relation(fields: [locationId], references: [id])
 
-  @@map("classes")
+  @@map("schedules")
 }
 
 model Reservation {
-  id       Int       @id @default(autoincrement())
-  user     User      @relation(fields: [userId], references: [id])
-  userId   Int       @map("user_id")
-  class    Class     @relation(fields: [classId], references: [id])
-  classId  Int       @map("class_id")
-  createdAt DateTime @default(now()) @map("created_at")
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  scheduleId  Int       @map("schedules_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
-  @@unique([userId, classId])
+  schedule    Schedule  @relation(fields: [scheduleId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, scheduleId])                          //Prevent users from taking the same schedule twice
 
   @@map("reservations")
 }
 
 model Purchase {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  planId     Int      @map("plan_id")
-  amount     Int
-  paid       Boolean  @default(false)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt      @map("updated_at")
+  id                  Int      @id @default(autoincrement())
+  userId              Int      @map("user_id")
+  planId              Int      @map("plan_id")
+  amount              Int
+  status              String
+  mercadoPagoId       Int      @map("mercado_pago_id")
+  createdAt           DateTime @default(now()) @map("created_at")
   
   plan       Plan     @relation(fields: [planId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
-
 
   @@map("purchases")
 }
@@ -125,11 +134,48 @@ model Plan {
   name                String
   description         String?
   price               Int
-  classesPerMonth     Int      @map("classes_per_month")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
+  classLimit          Int      @map("class_limit")
+  durationDays        Int      @map("duration_days") @default(30)
 
-  purchases           Purchase[]
+  purchases            Purchase[]
+  userPlan             UserPlan[]
 
   @@map("plans")
+}
+
+model UserPlan {
+  id               Int       @id @default(autoincrement())
+  userId           Int       @map("user_id")
+  planId           Int       @map("plan_id")
+  startDate        DateTime  @map("start_date")
+  expiresDate      DateTime  @map("expires_date")
+  remainingClasses Int       @map("remaining_classes")
+
+  user             User      @relation(fields: [userId], references: [id])
+  plan             Plan      @relation(fields: [planId], references: [id])
+
+  @@map("user_plans")
+}
+
+model Coach {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String?    @unique
+  phone      String?
+  isActive   Boolean    @default(true)  @map("is_active")
+  createdAt  DateTime   @default(now()) @map("created_at")
+
+  schedules  Schedule[]
+
+  @@map("coaches")
+}
+
+model Location {
+  id        Int        @id @default(autoincrement())
+  name      String
+  address   String?
+
+  schedules Schedule[]
+  
+  @@map("locations")
 }
