@@ -9,6 +9,6 @@
   <img
     src={logoSrc}
     alt="Bee Box Logo"
-    class="cursor-pointer w-[95px] md:w-32 {customClasses} "
+    class="cursor-pointer w-[95px] md:w-32 {customClasses}"
   />
 </a>
