@@ -1,65 +1,73 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { addHours } from 'date-fns';
-import prisma from '$lib/database'; // Ajusta según tu ruta
-
-function generateNumericCode(length = 6) {
-  const digits = "0123456789";
-  return Array.from({ length }, () => digits[Math.floor(Math.random() * digits.length)]).join('');
-}
+import { addMinutes } from 'date-fns';
+import prisma from '$lib/database';
+import { transporter } from '$lib/server/mail';
 
 function isValidEmail(email) {
-	return /.+@.+/.test(email);
+  return /.+@.+/.test(email);
 }
 
-async function generateToken(userId, email) {
-  await prisma.passwordResetToken.deleteMany({ where: { userId } });
+function generateNumericCode(length = 8) {
+  const digits = "0123456789";
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += digits[Math.floor(Math.random() * digits.length)];
+  }
+  return code;
+}
 
-  const token = generateNumericCode();
+const baseURL = process.env.NODE_ENV === 'production'
+  ? 'https://beebox.app'
+  : 'http://localhost:5173';
+
+async function sendResetCode(email, code) {
+  const link = `${baseURL}/password-reset?token=${code}`;
+
+  const mailOptions = {
+    from: 'jorgebejarosa@gmail.com',
+    to: email,
+    subject: 'Recuperar contraseña',
+    text: `Hacé clic en el siguiente enlace para restablecer tu contraseña: ${link}`,
+    html: `<p>Hacé clic para restablecer tu contraseña: <a href="${link}">Recuperar contraseña</a></p>`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+    return false;
+  }
+}
+
+async function generatePasswordResetCode(userId, email) {
+  await prisma.passwordResetToken.deleteMany({
+    where: { userId }
+  });
+
+  const code = generateNumericCode();
 
   await prisma.passwordResetToken.create({
     data: {
       userId,
       email,
-      token,
-      expiresAt: addHours(new Date(), 24),
+      token: code,
+      expiresAt: addMinutes(new Date(), 30) // válido por 30 minutos
     }
   });
 
-  return token;
-}
-
-async function sendResetEmail(email, token) {
-const resetLink = `http://localhost:5173/reset?token=${token}`;
-
-  const params = {
-    Destination: { ToAddresses: [email] },
-    Message: {
-      Body: {
-        Text: {
-          Data: `Hello! Click here to reset your password: ${resetLink}\n\nThis link is valid for 24 hours.`
-        }
-      },
-      Subject: { Data: "Reset your password" }
-    },
-    Source: "Bee-box <info@tusitio.com>"
-  };
-
-  try {
-    await ses.sendEmail(params).promise();
-    return true;
-  } catch (err) {
-    console.error("Email error:", err);
-    return false;
-  }
+  return code;
 }
 
 export const actions = {
-  default: async ({ request }) => {
-    const form = await request.formData();
-    const email = form.get("email")?.toLowerCase();
+  forgot: async (event) => {
+    const formData = await event.request.formData();
+    const email = formData.get("email")?.toLowerCase();
 
-    if (!email || !isValidEmail(email)) {
-      return fail(400, { message: "Invalid email" });
+    if (!email || typeof email !== "string" || !isValidEmail(email)) {
+      return fail(400, {
+        message: "Email inválido"
+      });
     }
 
     const user = await prisma.user.findUnique({
@@ -68,16 +76,29 @@ export const actions = {
     });
 
     if (!user) {
-      return fail(400, { message: "No user with that email" });
+      return fail(400, {
+        message: "No encontramos una cuenta con ese email"
+      });
     }
 
-    const token = await generateToken(user.id, email);
-    const sent = await sendResetEmail(email, token);
+    const token = await generatePasswordResetCode(user.id, email);
+    const sent = await sendResetCode(email, token);
 
     if (sent) {
-      throw redirect(302, '/forgot/success');
+      throw redirect(302, `/forgot/success?email=${email}`);
     } else {
-      return fail(500, { message: "Failed to send email. Try again later." });
+      return fail(500, {
+        message: "No se pudo enviar el correo. Intentá nuevamente."
+      });
     }
   }
 };
+
+export async function load({ locals, setHeaders }) {
+  if (locals.user) {
+    setHeaders({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+    });
+    throw redirect(302, `/bee-box/`);
+  }
+}

@@ -1,6 +1,8 @@
 <script>
   import HtmlHead from '$lib/HtmlHead.svelte';
   import Logo from '$lib/common/Logo.svelte';
+
+  window.location.href = "/bee-box";
 </script>
 
 <HtmlHead pageDataTitle={"Browser Based Esports Game | CPL Manager"} pageDataDescription={"Lead your FPS team to victory in the thrilling browser-based game set in the CPL esports tournaments. Take the challenge and compete in an intense league season!"} />
@@ -11,6 +13,6 @@
       <Logo customClasses="w-[150px]" />
     </div>
     <h3 class="text-center uppercase my-6">Confirmación</h3>
-    <p class="text-center">Verificar mail para restablecer contraseña.</p>
+    <p class="text-center">Exito</p>
   </div>
 </div>

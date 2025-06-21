@@ -32,7 +32,7 @@
     errors = '';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(e.target.value)) {
-      emailError = "Invalid email format";
+      emailError = "Formato de correo inválido";
       return;
     }
     emailError = '';
@@ -43,7 +43,7 @@
     if (
 			typeof e.target.value !== "string" || e.target.value.length < 6 || e.target.value.length > 255
 		) {
-			passwordError = "Password must be between 6 and 255 characters";
+			passwordError = "Más de 6 caracteres";
       return;
 		}
     passwordError = '';

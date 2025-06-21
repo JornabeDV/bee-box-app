@@ -33,7 +33,7 @@
     errors = '';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(e.target.value)) {
-      emailError = "Invalid email format";
+      emailError = "Formato de correo inválido";
       return;
     }
     emailError = '';
@@ -41,14 +41,14 @@
 </script>
 
 <div class="h-screen bg-no-repeat bg-cover bg-center flex items-center justify-center">
-  <div class=" bg-no-repeat bg-right-bottom rounded-lg min-w-[325px] md:w-[500px] pt-8 pb-6 px-6 md:px-12" >
+  <div class="pt-8 pb-6 px-6 md:px-12 h-full">
     <div class="flex justify-center">
-      <Logo customClasses="w-64" />
+      <Logo customClasses="w-[150px]" />
     </div>
-    <h1 class="text-4xl font-sourceSemiBold justify-center mt-6 mb-6 text-center text-light">Recuperar Password</h1>
+    <h3 class="font-sourceSemiBold justify-center mt-6 mb-6 text-center text-light">Recuperar Contraseña</h3>
     <div class="flex flex-col gap-4">
       <p>Ingrese su dirección de correo electrónico y le enviaremos un correo electrónico con más instrucciones.</p>
-      <form use:enhance={submitEmail} action="/forgot?/sendEmail" method="POST" class="flex bg-no-repeat gap-4 flex-col justify-between">
+      <form use:enhance={submitEmail} action="/forgot?/forgot" method="POST" class="flex bg-no-repeat gap-4 md:gap-8 flex-col justify-between">
         <label class="field group {!emailError ? 'hf:border-borderline' : ''}" class:active={email} class:error={emailError} class:border-error={emailError}>
           <input type="email lowercase" name="email" on:change={validateEmail} on:input={validateEmail} bind:value={email} required class="input--primary--form" />
           <span class="group-ac:translate-x-2 group-ac:translate-y-1 group-ac:text-[10px]">Email</span>
@@ -56,7 +56,7 @@
         {#if errors}
         <div class="min-h-[20px] text-error text-xs">{errors}</div>
         {/if}
-        <button class="button-primary button--md" disabled={emailError || $loading}>
+        <button class="button-primary button--md self-center" disabled={emailError || $loading}>
           {#if $loading}
             <Icon class={$loading ? 'animate-spin h-6 w-6' : 'h-6 w-6'} name="spinner"/>
           {:else}

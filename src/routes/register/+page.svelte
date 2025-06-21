@@ -28,7 +28,7 @@
     errors = '';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(e.target.value)) {
-      emailError = "Invalid email format";
+      emailError = "Formato de correo inválido";
       return;
     }
     emailError = '';
@@ -37,7 +37,7 @@
   const validatePassword = (e) => {
     errors = '';
     if (typeof e.target.value !== "string" || e.target.value.length < 6 || e.target.value.length > 255) {
-      passwordError = "Password must be between 6 and 255 characters";
+      passwordError = "Más de 6 caracteres";
       return;
     }
     passwordError = '';
@@ -45,7 +45,7 @@
 </script>
 
 <div class="h-screen bg-no-repeat bg-cover bg-center flex items-center justify-center">
-  <div class="rounded-lg min-w-[325px] md:w-[650px] pt-8 pb-6 px-6 md:px-12">
+  <div class="pt-8 pb-6 px-6 md:px-12">
     <div class="flex justify-center">
       <Logo customClasses="w-64" />
     </div>
@@ -61,7 +61,6 @@
             <div class="absolute -bottom-5 text-[11px] text-error">{emailError}</div>
           {/if}
         </div>
-
         <div class="relative grid">
           <label class="field group {!passwordError ? 'hf:border-borderline' : ''}" class:active={password} class:error={passwordError} class:border-error={passwordError}>
             <input type="password" name="password" on:change={validatePassword} on:input={validatePassword} bind:value={password} required class="input--primary--form" />
@@ -72,9 +71,7 @@
           {/if}
         </div>
       </fieldset>
-
       <div class="min-h-[20px] text-error text-xs">{errors}</div>
-
       <button class="button-primary button--md self-center" disabled={emailError || passwordError || $loading}>
         {#if $loading}
           <Icon class="animate-spin h-6 w-6" name="spinner" />
@@ -83,7 +80,6 @@
         {/if}
       </button>
     </form>
-
     <a href="/login" class="text-center mt-6 uppercase text-xs justify-center flex">¿Ya tenés cuenta?</a>
   </div>
 </div>

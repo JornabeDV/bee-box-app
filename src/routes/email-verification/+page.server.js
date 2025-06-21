@@ -2,9 +2,9 @@ import { fail, redirect } from "@sveltejs/kit";
 import { generateSessionToken, createSession } from "$lib/server/auth";
 import prisma from '$lib/database';
 import redisClient from '$lib/redis';
-import AWS from 'aws-sdk';
 import { addMinutes, addDays } from 'date-fns';
 import nodemailer from 'nodemailer';
+import { transporter } from '$lib/server/mail';
 
 function isValidEmail(email) {
 	return /.+@.+/.test(email);
@@ -41,16 +41,7 @@ async function generateEmailVerificationCode(userId, email) {
 	return code;
 }
 
-// Crear el transportador de Nodemailer
-const transporter = nodemailer.createTransport({
-  service: 'gmail',  // Usa el servicio de Gmail
-  auth: {
-    user: 'jorgebejarosa@gmail.com',  // Tu dirección de correo electrónico
-    pass: 'yukg zpdt lzmi oikf'    // Tu contraseña de correo electrónico (o una contraseña de aplicación si usas 2FA)
-  }
-});
-
-const baseURL = 'http://localhost:5173';
+const baseURL = process.env.NODE_ENV === 'production' ? 'https://beebox.app' : 'http://localhost:5173';
 
 async function sendVerificationCode(email, verificationCode) {
 const mailOptions = {
@@ -58,7 +49,7 @@ const mailOptions = {
   to: email,
   subject: 'Verify your email',
   text: `Click the link to verify your email: ${baseURL}/email-verification?code=${verificationCode}`,
-  html: `<p>Click the link to verify your email: <a href="${baseURL}/login">Verify your email</a></p>`
+  html: `<a href="${baseURL}/email-verification?code=${verificationCode}">Verify your email</a>`
 };
 
   try {
@@ -120,7 +111,15 @@ export async function load ({ cookies, url, request, getClientAddress }) {
 
     if (!user) {
       return { status: 400, error: 'User not found' };
-    } 
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        isActive: true
+      }
+    });
 
     // Delete the verification code to prevent reuse
     await prisma.emailVerificationCode.delete({ where: { code: code } });
@@ -131,12 +130,6 @@ export async function load ({ cookies, url, request, getClientAddress }) {
     if (!session) {
       throw new Error("Failed to create session");
     }
-
-    // record suspicious activity (won’t block login on error)
-		const forwardedIP = request.headers.get('x-forwarded-for');
-		const clientIP = forwardedIP ? forwardedIP.split(',')[0].trim() : getClientAddress();
-		const cookieHeader = request.headers.get("cookie") || "";
-		const gaClientId = extractGAClientId(cookieHeader);
 
     cookies.set("auth_session", token, {
       path: "/",

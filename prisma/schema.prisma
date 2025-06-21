@@ -14,6 +14,8 @@ model User {
   createdAt     DateTime      @default(now()) @map("created_at")
   passwordHash  String?       @map("password_hash") @db.VarChar
   emailVerified Boolean?      @map("email_verified")
+  role          String        @default("user") // "user" o "admin"
+  isActive      Boolean?      @map("is_active")
 
   userPlans                   UserPlan[]  
   sessions                    Session[]
@@ -44,6 +46,16 @@ model EmailVerificationCode {
   expiresAt DateTime @map("expires_at")
 
   @@map("email_verification_codes")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  email     String
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+
+  @@map("password_reset_tokens")
 }
 
 model LoginHistory {
@@ -109,7 +121,7 @@ model Reservation {
   schedule    Schedule  @relation(fields: [scheduleId], references: [id])
   user        User      @relation(fields: [userId], references: [id])
 
-  @@unique([userId, scheduleId])                          //Prevent users from taking the same schedule twice
+  @@unique([userId, scheduleId])
 
   @@map("reservations")
 }

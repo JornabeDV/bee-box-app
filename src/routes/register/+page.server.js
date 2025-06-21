@@ -2,6 +2,8 @@ import { fail, redirect } from "@sveltejs/kit";
 import argon2 from "argon2";
 import prisma from '$lib/database';
 import { addMinutes } from 'date-fns';
+import nodemailer from 'nodemailer';
+import { transporter } from '$lib/server/mail';
 
 function isValidEmail(email) {
   return /.+@.+/.test(email);
@@ -16,21 +18,26 @@ function generateNumericCode(length = 8) {
   return code;
 }
 
+const baseURL = process.env.NODE_ENV === 'production' 
+  ? 'https://beebox.app' 
+  : 'http://localhost:5173';
+
 async function sendVerificationCode(email, verificationCode) {
+  
 const mailOptions = {
   from: 'jorgebejarosa@gmail.com',
   to: email,
-  subject: 'Verify your email',
-  text: `Click the link to verify your email: ${baseURL}/email-verification?code=${verificationCode}`,
-  html: `<p>Click the link to verify your email: <a href="${baseURL}/login">Verify your email</a></p>`
+  subject: 'Verifica tu correo electrónico',
+  text: `Haga clic en el enlace para verificar su correo electrónico: ${baseURL}/email-verification?code=${verificationCode}`,
+  html: `<p>Haga clic en el enlace para verificar su correo electrónico: <a href="${baseURL}/email-verification?code=${verificationCode}">Verifica tu correo electrónico</a></p>`
 };
 
   try {
     await transporter.sendMail(mailOptions);
-    return true;  // Si el correo se envió con éxito
+    return true;
   } catch (error) {
     console.error('Error sending verification email:', error);
-    return false;  // Si ocurre un error
+    return false;
   }
 }
 
